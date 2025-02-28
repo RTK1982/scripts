@@ -10,23 +10,33 @@ else
     # Create a new configuration file and add the recommended security settings
     echo "Creating $CONF_FILE and adding security configurations..."
     bash -c "cat > $CONF_FILE" <<EOL
-# Custom SSH configuration for easy access
+# Custom SSH configuration for enhanced security by unico.systems
 
 # Enable public key authentication
 PubkeyAuthentication yes
 
 # Disable password authentication
-PasswordAuthentication yes
+PasswordAuthentication no
 
 # Disable root login
 PermitRootLogin no
+
+# Restrict SSH access to specific users and groups
+AllowUsers allowed_user
+AllowGroups allowed_group
+
+# Disable X11 forwarding
+X11Forwarding no
 
 # Use only SSH Protocol 2
 Protocol 2
 
 # Set idle timeout interval to 5 minutes
-ClientAliveInterval 3600
-ClientAliveCountMax 10
+ClientAliveInterval 300
+ClientAliveCountMax 0
+
+# Limit authentication attempts to prevent brute-force attacks
+MaxAuthTries 3
 
 # Use strong encryption ciphers and MACs
 Ciphers aes256-gcm@openssh.com,chacha20-poly1305@openssh.com

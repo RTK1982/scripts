@@ -1,0 +1,46 @@
+The recommended number of recovery blocks and redundancy level depends on the level of protection you want and the nature of the data you're working with. Here's a general guide to help you decide:
+
+### 1. **Understanding Redundancy Level (`-r`)**:
+   - **Low Redundancy (5-10%)**: Suitable for cases where data corruption is unlikely, or the file size is large, and you want to minimize the size of the parity files. This level can recover small errors or damage (up to 5-10% of the file).
+   - **Medium Redundancy (10-25%)**: A good balance for most use cases, offering reasonable protection against moderate damage. This level is commonly used when data integrity is important, but you don't expect significant damage.
+   - **High Redundancy (25-50%)**: Suitable for highly critical data where you need to ensure recovery even if a significant portion of the file is lost. This might be used in environments with high risks of data corruption or where the data cannot be easily replaced.
+
+### 2. **Choosing the Number of Recovery Blocks (`-n`)**:
+   - **Few Recovery Blocks (e.g., 1-3)**: Appropriate for small files or situations where you want minimal overhead. If the file is damaged, you’ll need all recovery blocks to restore it.
+   - **Many Recovery Blocks (e.g., 5-10 or more)**: Useful for larger files or scenarios where you might only lose parts of the file. Having more recovery blocks distributed increases the chances of successful recovery even if some recovery blocks are lost.
+
+### 3. **Recommended Settings Based on Use Cases**:
+
+- **General Use (Moderate Protection)**:
+  - **Redundancy Level**: 10-20%
+  - **Recovery Blocks**: 5-10
+  - **Use Case**: For everyday files where some level of protection is needed, but the risk of loss is moderate.
+
+- **Critical Data (High Protection)**:
+  - **Redundancy Level**: 20-30%
+  - **Recovery Blocks**: 10-20
+  - **Use Case**: For important documents, backups, or archives where data integrity is paramount.
+
+- **Archival Storage (Maximum Protection)**:
+  - **Redundancy Level**: 30-50%
+  - **Recovery Blocks**: 20 or more
+  - **Use Case**: For archival purposes where files might be stored for long periods, potentially in environments where data degradation could occur.
+
+### Example Command with Recommended Settings:
+
+For a moderately important file:
+```bash
+par2 c -r15 -n10 example.par2 example.txt
+```
+
+This command sets a 15% redundancy level and generates 10 recovery blocks, offering a good balance between protection and overhead.
+
+### Key Points to Consider:
+
+- **File Size**: Larger files can tolerate more recovery blocks, but they also increase the size of the parity files.
+- **Storage Space**: Higher redundancy and more recovery blocks increase the storage required for parity files.
+- **Likelihood of Damage**: If you're dealing with a high-risk environment (e.g., physical media subject to wear or frequent transfer), err on the side of higher redundancy.
+
+### Conclusion:
+- **10-20% redundancy** with **5-10 recovery blocks** is a reasonable starting point for most situations.
+- Increase redundancy and recovery blocks if data integrity is crucial and the data is highly susceptible to loss or damage.

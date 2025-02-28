@@ -1,0 +1,1 @@
+find /opt/unicosys/compose -mindepth 1 -type d -exec rm -rf {} +
