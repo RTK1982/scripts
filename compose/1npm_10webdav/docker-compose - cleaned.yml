@@ -1,0 +1,168 @@
+version: '3'
+
+networks:
+  npm-network:
+    driver: bridge
+
+services:
+  # Nginx Proxy Manager with SQLite
+  # IP: 192.168.205.15:81
+  # Zertifikat: star.u*****.sys*****
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - '80:80'     # HTTP
+      - '81:81'     # NPM UI
+      - '443:443'   # HTTPS
+    networks:
+      - npm-network
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+
+  # WebDAV Server 1
+  # Kunde: Ver***** St. Mich***
+  # DNS in Docker: http://webdav1:80
+  webdav1:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav1
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user1"
+      WEBDAV_PASSWORD: "password1"
+      PUID: "1000"
+      PGID: "1000"
+    volumes:
+      - ./webdav1/data:/var/lib/nginx/html
+      - /srv/backupstore/webdav1:/data
+
+  # WebDAV Server 2
+  # Kunde: B****K*
+  # DNS in Docker: http://webdav2:80
+  webdav2:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav2
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user2"
+      WEBDAV_PASSWORD: "password2"
+      PUID: "1000"
+      PGID: "1000"
+    volumes:
+      - ./webdav2/data:/var/lib/nginx/html
+      - /srv/backupstore/webdav2:/data
+
+  # WebDAV Server 3
+  # Kunde: P***is am E**e
+  # DNS in Docker: http://webdav3:80
+  webdav3:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav3
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user3"
+      WEBDAV_PASSWORD: "password3"
+      PUID: "1000"
+      PGID: "1000"
+    volumes:
+      - ./webdav3/data:/var/lib/nginx/html
+      - /srv/backupstore/webdav3:/data
+
+  # WebDAV Server 4
+  webdav4:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav4
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user4"
+      WEBDAV_PASSWORD: "password4"
+    volumes:
+      - ./webdav4/data:/var/lib/nginx/html
+
+  # WebDAV Server 5
+  webdav5:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav5
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user5"
+      WEBDAV_PASSWORD: "password5"
+    volumes:
+      - ./webdav5/data:/var/lib/nginx/html
+
+  # WebDAV Server 6
+  webdav6:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav6
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user6"
+      WEBDAV_PASSWORD: "password6"
+    volumes:
+      - ./webdav6/data:/var/lib/nginx/html
+
+  # WebDAV Server 7
+  webdav7:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav7
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user7"
+      WEBDAV_PASSWORD: "password7"
+    volumes:
+      - ./webdav7/data:/var/lib/nginx/html
+
+  # WebDAV Server 8
+  webdav8:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav8
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user8"
+      WEBDAV_PASSWORD: "password8"
+    volumes:
+      - ./webdav8/data:/var/lib/nginx/html
+
+  # WebDAV Server 9
+  webdav9:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav9
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user9"
+      WEBDAV_PASSWORD: "password9"
+    volumes:
+      - ./webdav9/data:/var/lib/nginx/html
+
+  # WebDAV Server 10
+  webdav10:
+    image: dgraziotin/nginx-webdav-nononsense:latest
+    container_name: webdav10
+    restart: unless-stopped
+    networks:
+      - npm-network
+    environment:
+      WEBDAV_USERNAME: "user10"
+      WEBDAV_PASSWORD: "password10"
+    volumes:
+      - ./webdav10/data:/var/lib/nginx/html

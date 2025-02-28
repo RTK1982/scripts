@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  jspwiki:
+    image: apache/jspwiki   # Replace with your preferred JSPWiki image if needed.
+    container_name: jspwiki
+    ports:
+      - "8080:8080"
+    networks:
+      - net_jspwiki
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      - jspwiki
+    networks:
+      - net_jspwiki
+    restart: always
+
+networks:
+  net_jspwiki:
+    driver: bridge

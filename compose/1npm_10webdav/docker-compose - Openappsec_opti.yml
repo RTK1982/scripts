@@ -1,0 +1,101 @@
+version: "3.8"
+
+networks:
+  npm-network:
+    driver: bridge
+
+x-webdav-defaults: &webdav-defaults
+  image: dgraziotin/nginx-webdav-nononsense:latest
+  restart: unless-stopped
+  environment:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: Europe/Zurich
+  networks:
+    - npm-network
+
+services:
+  appsec-npm:
+    container_name: appsec-npm
+    image: ghcr.io/openappsec/nginx-proxy-manager-attachment:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"   # Public HTTP Port
+      - "443:443" # Public HTTPS Port
+      - "81:81"   # Admin Web Port
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+      - ./npm/appsec-logs:/ext/appsec-logs
+      - ./npm/appsec-localconfig:/ext/appsec
+    environment:
+      TZ: Europe/Zurich
+    networks:
+      - npm-network
+
+  appsec-agent:
+    container_name: appsec-agent
+    image: ghcr.io/openappsec/agent:latest
+    restart: unless-stopped
+    environment:
+      user_email: deine@email.com
+      nginxproxymanager: "true"
+      autoPolicyLoad: "true"
+      TZ: Europe/Zurich
+    volumes:
+      - ./npm/appsec-config:/etc/cp/conf
+      - ./npm/appsec-data:/etc/cp/data
+      - ./npm/appsec-logs:/var/log/nano_agent
+      - ./npm/appsec-localconfig:/ext/appsec
+    command: /cp-nano-agent -standalone
+    networks:
+      - npm-network
+
+  goaccess:
+    container_name: goaccess
+    image: xavierh/goaccess-for-nginxproxymanager:latest
+    restart: always
+    ports:
+      - "7880:7880"
+    environment:
+      TZ: Europe/Zurich
+      SKIP_ARCHIVED_LOGS: "False"
+      DEBUG: "False"
+      BASIC_AUTH: "False"
+      EXCLUDE_IPS: "127.0.0.1"
+      LOG_TYPE: NPM
+      LANGUAGE: de
+    volumes:
+      - ./npm/data/logs:/opt/log
+    networks:
+      - npm-network
+
+  webdav1:
+    <<: *webdav-defaults
+    container_name: webdav1
+    environment:
+      WEBDAV_USERNAME: user1
+      WEBDAV_PASSWORD: password1
+    volumes:
+      - ./webdav1/html:/var/lib/nginx/html
+      - ./webdav1/data:/data
+
+  webdav2:
+    <<: *webdav-defaults
+    container_name: webdav2
+    environment:
+      WEBDAV_USERNAME: user2
+      WEBDAV_PASSWORD: password2
+    volumes:
+      - ./webdav2/html:/var/lib/nginx/html
+      - ./webdav2/data:/data
+
+  webdav3:
+    <<: *webdav-defaults
+    container_name: webdav3
+    environment:
+      WEBDAV_USERNAME: user3
+      WEBDAV_PASSWORD: password3
+    volumes:
+      - ./webdav3/html:/var/lib/nginx/html
+      - ./webdav3/data:/data

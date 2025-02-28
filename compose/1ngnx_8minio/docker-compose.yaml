@@ -1,0 +1,150 @@
+version: '3.7'
+
+services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    depends_on:
+      - minio1
+      - minio2
+      - minio3
+      - minio4
+      - minio5
+      - minio6
+      - minio7
+      - minio8
+    ports:
+      - "443:443"   # HTTPS port
+      - "80:80"     # HTTP port, optional for HTTP to HTTPS redirection
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /path/to/ssl/certs:/etc/nginx/ssl:ro  # Mount SSL certificate directory
+    networks:
+      - minio-cluster
+
+  # MinIO instances (8 total)
+  
+  minio1:
+    image: minio/minio
+    container_name: minio1
+    volumes:
+      - minio1-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+      
+  minio2:
+    image: minio/minio
+    container_name: minio2
+    volumes:
+      - minio2-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+      
+  minio3:
+    image: minio/minio
+    container_name: minio3
+    volumes:
+      - minio3-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+      
+  minio4:
+    image: minio/minio
+    container_name: minio4
+    volumes:
+      - minio4-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+      
+   minio5:
+    image: minio/minio
+    container_name: minio5
+    volumes:
+      - minio5-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+      
+  minio6:
+    image: minio/minio
+    container_name: minio6
+    volumes:
+      - minio6-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+      
+  minio7:
+    image: minio/minio
+    container_name: minio7
+    volumes:
+      - minio7-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+
+  minio8:
+    image: minio/minio
+    container_name: minio8
+    volumes:
+      - minio8-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server http://minio{1...8}/data --console-address ":9001"
+    networks:
+      - minio-cluster
+
+  # MinIO Client (mc) for User and Policy Configuration
+  mc:
+    image: minio/mc
+    depends_on:
+      - minio1
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      mc alias set myminio http://minio1:9000 minioadmin minioadminpassword;
+      mc admin user add myminio newuser newpassword;
+      mc admin policy set myminio readwrite user=newuser;
+      "
+    networks:
+      - minio-cluster
+
+volumes:
+  minio1-data:
+  minio2-data:
+  minio3-data:
+  minio4-data:
+  minio5-data:
+  minio6-data:
+  minio7-data:
+  minio8-data:
+
+networks:
+  minio-cluster:

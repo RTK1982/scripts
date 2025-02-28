@@ -1,0 +1,12 @@
+mkdir -p ./npm/data
+mkdir -p ./npm/letsencrypt
+mkdir -p ./webdav1/data
+mkdir -p ./webdav2/data
+mkdir -p ./webdav3/data
+mkdir -p ./webdav4/data
+mkdir -p ./webdav5/data
+mkdir -p ./webdav6/data
+mkdir -p ./webdav7/data
+mkdir -p ./webdav8/data
+mkdir -p ./webdav9/data
+mkdir -p ./webdav10/data

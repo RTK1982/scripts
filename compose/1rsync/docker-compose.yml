@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Set up directories and configurations
+mkdir -p rsync-server/{data,rsyncd,secrets}
+
+# Generate rsyncd.conf file
+cat <<EOL > rsync-server/rsyncd/rsyncd.conf
+uid = root
+gid = root
+use chroot = no
+max connections = 4
+log file = /var/log/rsync.log
+timeout = 300
+EOL
+
+# Generate user folders, secrets, and rsyncd.conf entries for each user
+for i in {1..20}; do
+  username="user$i"
+  password="password$i"
+
+  # Create user data directory
+  mkdir -p rsync-server/data/$username
+
+  # Create a password file for the user
+  echo "$username:$password" > rsync-server/rsyncd/secrets/$username.pwd
+
+  # Add user entry to rsyncd.conf
+  cat <<EOL >> rsync-server/rsyncd/rsyncd.conf
+
+[rsync_$username]
+    path = /data/$username
+    comment = $username's Private Folder
+    auth users = $username
+    secrets file = /etc/rsyncd/secrets/$username.pwd
+    read only = false
+EOL
+done
+
+# Generate docker-compose.yml file with Europe/Berlin timezone
+cat <<EOL > rsync-server/docker-compose.yml
+version: '3.8'
+
+services:
+  rsync:
+    image: trinitronx/rsync
+    container_name: rsync_server
+    ports:
+      - "873:873"
+    volumes:
+      - ./data:/data
+      - ./rsyncd/rsyncd.conf:/etc/rsyncd.conf
+      - ./rsyncd/secrets:/etc/rsyncd/secrets
+    environment:
+      - TZ=Europe/Berlin
+    command: ["rsync", "--daemon", "--no-detach"]
+EOL
+
+# Start the Rsync server with Docker Compose
+cd rsync-server
+docker-compose up -d
+
+echo "Rsync server is up and running with 20 users. Timezone is set to Europe/Berlin (UTC+1/UTC+2)."
